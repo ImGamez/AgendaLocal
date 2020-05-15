@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Agenda</title>
+    <style>
+        *{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+        }
+        body{
+            margin: 0px;
+            background-color: rgb(240, 240, 240);
+        }
+        .maincontainer{
+            width: 100%;
+        }
+        .card{
+            width:400px;
+            height: 600px;
+            background: white;
+            position: absolute;
+            margin: auto;
+            bottom: 0px;
+            left: 0px;
+            top: 0px;
+            right: 0px;
+            filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.16)) blur(0px);
+            border-radius: 5px;
+            transition: transform 0.4s cubic-bezier(.33,.56,.2,1.02);
+            transform: perspective(800px);
+        }
+        .cardtittle{
+            text-align: center;
+            user-select: none;
+            background: transparent;
+            margin: 0px;
+            font-size: 20px;
+            font-weight: bold;
+            padding-top: 8px;
+            padding-bottom: 12px;
+        }
+        .cardcontent{
+            border: 0px solid transparent;
+            background: white;
+            overflow-y: auto;
+        }
+        .cardtop{
+            height: 95px;
+            background: rgba(247, 247, 247, 1);
+            border-bottom: solid 1px rgba(176, 176, 176, 1);
+        }
+        #addbutton{
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-family: "Segoe MDL2 Assets";
+            font-size: 20px;
+            color: #f25a13;
+            user-select: none;
+        }
+        .contactslist{
+            margin: 0px;
+            padding: 0px;
+        }
+        .contactslist > li{
+            border-bottom: solid 1px #F5F5F5;
+        }
+        .contactslist > li > a{
+            display: block;
+            padding-left: 10px;
+            height: 40px;
+            color: black;
+            font-weight: bold;
+            text-decoration: none;
+            line-height: 40px;
+            user-select: none;
+        }
+        .contactslist > li > a:hover{
+            background: #EFEFEF;
+        }
+        #detailspanel{
+            background: white;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            top: 0px;
+            left: 110%;
+            transition: left 0.2s cubic-bezier(.33,.56,.2,1.02);
+            filter: drop-shadow(0px 3px 6px rgba(0, 0, 0, 0.50)) blur(0px);
+        }
+        .detailstop{
+            height: 45px;
+        }
+        #editbutton{
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-family: "Segoe UI";
+            font-size: 18px;
+            color: #f25a13;
+            text-decoration: none;
+            user-select: none;
+        }
+        #detailsback{
+            position: absolute;
+            left: 10px;
+            top: 10px;
+            font-family: "Segoe MDL2 Assets";
+            font-size: 20px;
+            color: #f25a13;
+            text-decoration: none;
+            user-select: none;
+        }
+        #detailsback > span{
+            font-size: 18px;
+            display: inline-block;
+            margin-left: 5px;
+        }
+        .detailsminitittle{
+            text-align: left;
+            font-size: 14px;
+            font-weight: bold;
+            margin-left: 10px;
+            user-select: none;
+        }
+        .detailsminidetail{
+            text-align: left;
+            font-size: 14px;
+            font-weight: normal;
+            margin-left: 10px;
+            margin-bottom: 5px;
+            border-bottom: solid 1px #eaeaea;
+            padding-bottom: 5px;
+        }
+        .detailsname{
+            text-align: center;
+            font-size: 25px;
+            margin-bottom: 10px;
+        }
+        .detailsminidetail > input{
+            text-align: left;
+            font-size: 14px;
+            font-weight: normal;
+            margin-left: 0px;
+            margin-bottom: 5px;
+            border: none;
+            border-bottom: solid 1px #bababa;
+            padding-bottom: 5px;
+            display: none;
+        }
+        .detailsname > input{
+            text-align: center;
+            font-size: 25px;
+            font-weight: normal;
+            margin-left: 10px;
+            margin-bottom: 10px;
+            border: none;
+            border-bottom: solid 1px #bababa;
+            display: none;
+            width: calc(100% - 20px);
+        }
+        #canceleditbutton{
+            position: absolute;
+            left: 15px;
+            top: 10px;
+            font-family: "Segoe UI";
+            font-size: 18px;
+            color: #f25a13;
+            text-decoration: none;
+            user-select: none;
+            visibility: hidden;
+        }
+        #doneditbutton{
+            position: absolute;
+            right: 15px;
+            top: 10px;
+            font-family: "Segoe UI";
+            font-size: 18px;
+            color: #f25a13;
+            text-decoration: none;
+            user-select: none;
+            visibility: hidden;
+        }
+        #searchtxt{
+            border-radius: 10px;
+            border: none;
+            background: rgba(232, 232, 234, 1);
+            color: rgba(126, 126, 128, 1);
+            height: 30px;
+            font-size: 16px;
+            margin-left: 15px;
+            width: calc(100% - 70px);
+            caret-color: #f25a13;
+            padding-left: 30px;
+            padding-right: 10px;
+        }
+        #searchtxt:focus{
+            outline: none;
+            color: black;
+        }
+        #searchcontainer{
+            position: relative;
+        }
+        #searchcontainer::before{
+            background: url('data:image/svg+xml;utf8,%3Csvg%20id%3D%22Grupo_1%22%20data-name%3D%22Grupo%201%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2261.157%22%20height%3D%2261.157%22%20viewBox%3D%220%200%2061.157%2061.157%22%3E%3Cg%20id%3D%22Elipse_1%22%20data-name%3D%22Elipse%201%22%20fill%3D%22none%22%20stroke%3D%22%237E7E80%22%20stroke-width%3D%225%22%3E%3Ccircle%20cx%3D%2223.5%22%20cy%3D%2223.5%22%20r%3D%2223.5%22%20stroke%3D%22none%22%2F%3E%3Ccircle%20cx%3D%2223.5%22%20cy%3D%2223.5%22%20r%3D%2221%22%20fill%3D%22none%22%2F%3E%3C%2Fg%3E%3Cline%20id%3D%22L%C3%ADnea_1%22%20data-name%3D%22L%C3%ADnea%201%22%20x2%3D%2215%22%20y2%3D%2215%22%20transform%3D%22translate%2840.5%2040.5%29%22%20fill%3D%22none%22%20stroke%3D%22%237E7E80%22%20stroke-linecap%3D%22round%22%20stroke-width%3D%228%22%2F%3E%3C%2Fsvg%3E') no-repeat center center;
+            background-size: 45% auto;
+            content: '';
+            pointer-events: none;
+            height: 100%;
+            left: 15px;
+            position: absolute;
+            top: 0;
+            width: 2em;
+        }
+        #detailsbottom{
+            position: absolute;
+            bottom: 20px;
+            left: 0px;
+            background: transparent;
+            width: 100%;
+            height: 50px;
+        }
+        #deletebutton{
+            position: absolute;
+            margin: auto;
+            left: 0px;
+            right: 0px;
+            top: 0px;
+            bottom: 0px;
+            width: 80%;
+            height: 40px;
+            background: #ffd7c0;
+            border: none;
+            border-radius: 10px;
+            color: #ff2300;
+            font-weight: bold;
+            font-size: 16px;
+            vertical-align: middle;
+            text-align: center;
+            line-height: 35px;
+            text-decoration: none;
+            visibility: hidden;
+        }
+        .addcontactdialog{
+            transform: translateY(220%);
+            transition: transform 0.4s cubic-bezier(.33,.56,.2,1.02);
+        }
+        .topbutton{
+            position: absolute;
+            top: 10px;
+            font-family: "Segoe UI";
+            font-size: 18px;
+            color: #f25a13;
+            text-decoration: none;
+            user-select: none;
+        }
+        .topbutton.right {
+            right: 15px;
+        }
+        .topbutton.left {
+            left: 15px;
+        }
+        .addtxt{
+            display: block;
+            margin: 10px;
+            margin-right: 0px;
+            margin-left: 20px;
+            padding: 10px;
+            padding-right: 20px;
+            padding-left: 0px;
+            width: calc(100% - 40px);
+            border: none;
+            border-bottom: 1px solid #eaeaea;
+        }
+        .addtxt:focus{
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="maincontainer">
+        <div class="card" id="maincard">
+            <div class="cardtop">
+                <h1 class="cardtittle">Agenda</h1>
+                <a id="addbutton" href="">&#xE710;</a>
+                <div id="searchcontainer">
+                    <input type="text" placeholder="Buscar" id="searchtxt" oninput='search(event)' onkeypress='search(event)' onpaste='search(event)'>
+                </div>
+            </div>
+            
+            <div class="cardcontent">
+                <ul id="contactslist" class="contactslist">
+                    <!--<li> <a href=""> Nombre 1 </a></li>
+                    <li> <a href=""> Nombre 2 </a></li>-->
+                </ul>
+            </div>
+
+            <div id="detailspanel">
+                <div class="detailstop">
+                    <a id="detailsback" href="">&#xE76B;<span>Agenda</span></a>
+                    <h1 class="cardtittle">Contacto</h1>
+                    <a id="editbutton" href="">Editar</a>
+                    <a id="doneditbutton" href="">Listo</a>
+                    <a id="canceleditbutton" href="">Cancelar</a>
+                </div>
+
+                <div class="detailsname">
+                    <span id="detailsName">Nombre</span>
+                    <input id="editname" type="text" value="">
+                </div>
+                <div class="detailsminitittle">Direccion</div>
+                <div class="detailsminidetail">
+                    <span id="detailsDireccion">#123</span>
+                    <input id="editdir" type="text" value="">
+                </div>
+                <div class="detailsminitittle">Celular</div>
+                <div class="detailsminidetail">
+                    <span id="detailsCelular">9801010</span>
+                    <input id="editcel" type="text" value="">
+                </div>
+                <div class="detailsminitittle">Correo</div>
+                <div class="detailsminidetail">
+                    <span id="detailsCorreo">asda@asdas.com</span>
+                    <input id="editemail" type="text" value="">
+                </div>
+                <div id="detailsbottom">
+                    <a id="deletebutton" href="" value="Eliminar">Eliminar</a>
+                </div>
+            </div>
+        </div>
+        <div class="card addcontactdialog" id="addcard">
+            <div class="detailstop">
+                <a id="canceladdbutton" class="topbutton left" href="">Cancelar</a>
+                <h1 class="cardtittle">Añadir contacto</h1>
+                <a id="doneaddbutton" class="topbutton right" href="">Listo</a>
+            </div>
+            <div>
+                <input type="text" class="addtxt" placeholder="Nombre" name="" id="addname">
+                <input type="text" class="addtxt" placeholder="Direccion" name="" id="adddir">
+                <input type="text" class="addtxt" placeholder="Celular" name="" id="addcel">
+                <input type="email" class="addtxt" placeholder="Correo" name="" id="addcorreo">
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        let contacto = {};
+        let storage = window.localStorage;
+        
+        function addContact(nombre, direccion, celular, correo){
+            let contactoNuevo = {
+                "id" : '_' + Math.random().toString(36).substr(2, 9),
+                "nombre" : encodeURIComponent(nombre),
+                "dir" : encodeURIComponent(direccion),
+                "cel" : encodeURIComponent(celular), 
+                "correo" : encodeURIComponent(correo)
+            }
+
+            let contactos = JSON.parse(localStorage.getItem("contactos"));
+            contactos.push(contactoNuevo);
+            localStorage.setItem("contactos", JSON.stringify(contactos));
+           
+            getAllContacts(((document.getElementById("searchtxt").value.length > 0) ? document.getElementById("searchtxt").value.trim() : null));
+            closeAddPanel();
+        }
+
+        function deleteContact(id){
+            let contactos =  JSON.parse(localStorage.getItem("contactos"));
+            let index = contactos.findIndex(contacto => contacto.id == id);
+
+            contactos.splice(index);
+            
+            localStorage.setItem("contactos", JSON.stringify(contactos));
+
+            contacto = null;
+            getAllContacts(((document.getElementById("searchtxt").value.length > 0) ? document.getElementById("searchtxt").value.trim() : null));
+            document.getElementById("detailspanel").style.left = "110%";
+                    
+        }
+
+        function modifyContact(){
+            let contactos =  JSON.parse(localStorage.getItem("contactos"));
+            let index = contactos.findIndex(contacto => contacto.id == contacto.id);
+
+            contactos[index] = contacto;
+            localStorage.setItem("contactos", JSON.stringify(contactos));
+
+            document.getElementById("editbutton").style.visibility = "visible";
+            document.getElementById("doneditbutton").style.visibility = "collapse";
+            document.getElementById("deletebutton").style.visibility = "hidden";
+
+            detailsmode();
+            let name = document.getElementById("detailsName");
+            let dir = document.getElementById("detailsDireccion");
+            let cel = document.getElementById("detailsCelular");
+            let email = document.getElementById("detailsCorreo");
+            name.innerHTML = contacto.nombre;
+            dir.innerHTML = contacto.dir;
+            cel.innerHTML = contacto.cel;
+            email.innerHTML = contacto.correo;
+        }
+
+        function getContactDetails(id){
+            contacto = JSON.parse(localStorage.getItem("contactos")).filter(contacto => contacto.id == id)[0];
+            let name = document.getElementById("detailsName");
+            let dir = document.getElementById("detailsDireccion");
+            let cel = document.getElementById("detailsCelular");
+            let email = document.getElementById("detailsCorreo");
+            name.innerHTML = contacto.nombre;
+            dir.innerHTML = contacto.dir;
+            cel.innerHTML = contacto.cel;
+            email.innerHTML = contacto.correo;
+            document.getElementById("detailspanel").style.left = "0px";
+        }
+
+        function getAllContacts(filter){
+            let list = document.getElementById("contactslist");
+            list.innerHTML = "";    
+            let contactos;
+            contactos = (filter) ? JSON.parse(localStorage.getItem("contactos")).filter(contacto => contacto.nombre.toLowerCase().includes(encodeURIComponent(filter.toLowerCase()))) : JSON.parse(localStorage.getItem("contactos"));
+            contactos.forEach(function(item){
+                let link = document.createElement("a");
+                link.href = "";
+                link.innerHTML = item.nombre;
+                link.onclick = function(e){
+                    e.preventDefault();
+                    getContactDetails(this.dataset.contactid);
+                };
+                link.dataset.contactid=item.id;
+                let listitem = document.createElement("li");
+                listitem.appendChild(link);
+                list.appendChild(listitem);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function(e) { 
+            console.log(storage);
+            if(storage != null){
+                if(storage.getItem("contactos") == null){
+                    console.warn("Primera ejecucion");
+                    storage.setItem("contactos", JSON.stringify([]));
+                }
+                getAllContacts();
+            }else{
+                alert("Este navegador no soporta WebStorage, la aplicacion no funcionará");
+            }
+        });
+
+        document.getElementById("detailsback").onclick = function(e){
+            e.preventDefault();
+            getAllContacts(((document.getElementById("searchtxt").value.length > 0) ? document.getElementById("searchtxt").value.trim() : null));
+            document.getElementById("detailspanel").style.left = "110%";
+        };
+
+        document.getElementById("editbutton").onclick = function(e){
+            e.preventDefault();
+            document.getElementById("editbutton").style.visibility = "collapse";
+            document.getElementById("doneditbutton").style.visibility = "visible";
+            document.getElementById("deletebutton").style.visibility = "visible";
+
+            let editname = document.getElementById("editname");
+            let editdir = document.getElementById("editdir");
+            let editcel = document.getElementById("editcel");
+            let editemail = document.getElementById("editemail");
+            
+            editname.value = contacto.nombre;
+            editdir.value = contacto.dir;
+            editcel.value = contacto.cel;
+            editemail.value = contacto.correo;
+
+            let name = document.getElementById("detailsName");
+            let dir = document.getElementById("detailsDireccion");
+            let cel = document.getElementById("detailsCelular");
+            let email = document.getElementById("detailsCorreo");
+            name.style.display = "none"; 
+            dir.style.display = "none"; 
+            cel.style.display = "none"; 
+            email.style.display = "none"; 
+            
+            editname.style.display = "block"; 
+            editdir.style.display = "block"; 
+            editcel.style.display = "block"; 
+            editemail.style.display = "block"; 
+            
+            let canceledit = document.getElementById("canceleditbutton");
+            let detailsback = document.getElementById("detailsback");
+            canceledit.style.visibility = "visible"; 
+            detailsback.style.visibility = "hidden"; 
+        };
+
+        function detailsmode(){
+            document.getElementById("editbutton").style.visibility = "visible";
+            document.getElementById("doneditbutton").style.visibility = "collapse";
+            document.getElementById("deletebutton").style.visibility = "hidden";
+            let canceledit = document.getElementById("canceleditbutton");
+            let detailsback = document.getElementById("detailsback");
+            canceledit.style.visibility = "hidden"; 
+            detailsback.style.visibility = "visible"; 
+
+            let name = document.getElementById("detailsName");
+            let dir = document.getElementById("detailsDireccion");
+            let cel = document.getElementById("detailsCelular");
+            let email = document.getElementById("detailsCorreo");
+            name.style.display = "block"; 
+            dir.style.display = "block"; 
+            cel.style.display = "block"; 
+            email.style.display = "block"; 
+            let editname = document.getElementById("editname");
+            let editdir = document.getElementById("editdir");
+            let editcel = document.getElementById("editcel");
+            let editemail = document.getElementById("editemail");
+            editname.style.display = "none"; 
+            editdir.style.display = "none"; 
+            editcel.style.display = "none"; 
+            editemail.style.display = "none"; 
+        }
+
+        document.getElementById("canceleditbutton").onclick = function(e){
+            e.preventDefault();
+
+            detailsmode();
+
+            let canceledit = document.getElementById("canceleditbutton");
+            let detailsback = document.getElementById("detailsback");
+            canceledit.style.visibility = "hidden"; 
+            detailsback.style.visibility = "visible"; 
+        };
+
+        document.getElementById("doneditbutton").onclick = function(e){
+            e.preventDefault();
+            
+            let editname = document.getElementById("editname").value;
+            let editdir = document.getElementById("editdir").value;
+            let editcel = document.getElementById("editcel").value;
+            let editemail = document.getElementById("editemail").value;
+            
+            if(editname.length <= 0 || editdir.length <= 0 || editcel.length <= 0 || editemail.length <= 0){
+                alert("Todos los campos deben tener datos.");
+                return;
+            }
+
+            contacto.nombre = editname;
+            contacto.dir = editdir;
+            contacto.cel = editcel;
+            contacto.correo = editemail;
+
+            modifyContact();
+        };
+
+        var delayTimer;
+        function search(e){
+            clearTimeout(delayTimer);
+            delayTimer = setTimeout(function() {
+                if(document.getElementById("searchtxt").value.length > 0){
+                    getAllContacts(document.getElementById("searchtxt").value.trim());
+                }else{
+                    getAllContacts();
+                }
+            }, 300); 
+        }
+
+        document.getElementById("deletebutton").onclick = function(e){
+            e.preventDefault();
+            var confirmation = window.confirm("Está seguro de querer eliminar este contacto?");
+            if(confirmation){
+                deleteContact(contacto.id);
+                detailsmode();
+            }
+        };
+
+        function openAddPanel(){
+            let maincard = document.getElementById("maincard");
+            let addcard = document.getElementById("addcard");
+            maincard.style.transform = "perspective(400px) translateZ(-20px)";
+            addcard.style.transform = "translateY(25px)";
+        }
+
+        document.getElementById("addbutton").onclick = function(e){
+            e.preventDefault();
+            openAddPanel();
+        };
+
+        function closeAddPanel(){
+            let maincard = document.getElementById("maincard");
+            let addcard = document.getElementById("addcard");
+            maincard.style.transform = "perspective(400px) translateZ(0px)";
+            addcard.style.transform = "translateY(220%)";
+            document.getElementById("addname").value = "";
+            document.getElementById("adddir").value = "";
+            document.getElementById("addcel").value = "";
+            document.getElementById("addcorreo").value = "";
+        }
+        
+        document.getElementById("canceladdbutton").onclick = function(e){
+            e.preventDefault();
+            closeAddPanel();
+        };
+
+        document.getElementById("doneaddbutton").onclick = function(e){
+            e.preventDefault();
+            let addname = document.getElementById("addname").value;
+            let adddir = document.getElementById("adddir").value;
+            let addcel = document.getElementById("addcel").value;
+            let addemail = document.getElementById("addcorreo").value;
+            
+            if(addname.length <= 0 || adddir.length <= 0 || addcel.length <= 0 || addemail.length <= 0){
+                alert("Todos los campos deben tener datos.");
+                return;
+            }
+
+            addContact(addname, adddir, addcel, addemail);
+        };
+    </script>
+</body>
+</html>
