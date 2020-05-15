@@ -7,7 +7,7 @@
     <title>Agenda</title>
     <style>
         *{
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, Ubuntu;
             overflow: hidden;
         }
         body{
@@ -352,10 +352,10 @@
         function addContact(nombre, direccion, celular, correo){
             let contactoNuevo = {
                 "id" : '_' + Math.random().toString(36).substr(2, 9),
-                "nombre" : encodeURIComponent(nombre),
-                "dir" : encodeURIComponent(direccion),
-                "cel" : encodeURIComponent(celular), 
-                "correo" : encodeURIComponent(correo)
+                "nombre" : nombre,
+                "dir" : direccion,
+                "cel" : celular, 
+                "correo" : correo
             }
 
             let contactos = JSON.parse(localStorage.getItem("contactos"));
@@ -419,7 +419,7 @@
             let list = document.getElementById("contactslist");
             list.innerHTML = "";    
             let contactos;
-            contactos = (filter) ? JSON.parse(localStorage.getItem("contactos")).filter(contacto => contacto.nombre.toLowerCase().includes(encodeURIComponent(filter.toLowerCase()))) : JSON.parse(localStorage.getItem("contactos"));
+            contactos = (filter) ? JSON.parse(localStorage.getItem("contactos")).filter(contacto => contacto.nombre.toLowerCase().includes(filter.toLowerCase())) : JSON.parse(localStorage.getItem("contactos"));
             contactos.forEach(function(item){
                 let link = document.createElement("a");
                 link.href = "";
